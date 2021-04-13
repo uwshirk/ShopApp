@@ -1,0 +1,13 @@
+﻿@model Dictionary<int, EmailTestApp.Models.EventModel>
+
+@{
+    ViewBag.Title = "All Events";
+}
+
+<div id="divContent">
+
+@foreach (var item in Model) {
+    <p>@item.Value.ToString() @Html.ActionLink("Groups", "EventGroups", new { date = item.Value.Date, league = item.Value.LeagueRef })</p> 
+   
+}
+</div>

@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "League Manager";
+    Layout = "~/Views/Shared/_IndexLayout.cshtml";
+}
+
+    <script>
+        //When the elements load, call fill events.
+        $("#upcoming").load(fillEvents());
+        
+        function fillEvents() {
+            //If a user is logged in, get their upcoming events.
+            @if (User.Identity.IsAuthenticated)
+            {
+                <text>
+                    userName = @Html.Raw(Json.Encode(User.Identity.Name))
+                    
+                    $.ajax({
+                        url: "/Home/getUpcomingEventsByUser",
+                        type: 'POST',
+                        data: { userName : userName},
+                        success: function (result) 
+                        {
+                            $("#upcomingEvents").html(result);
+                        }})
+                </text>
+
+            }
+            //Otherwise, get all upcoming events.
+            else
+            {
+                 <text>
+                    $.get('@Url.Action("getUpcomingEvents")', function (data) 
+                        {
+                            $("#upcomingEvents").html(data);
+                        })
+                </text>
+            }
+       }
+    </script>
+
+
+    <!--<div id="divContent">
+                <p>
+                    Welcome to the League Management website.
+
+                    <!-- attempting to create a calendar from a tutorial from designmodo.com
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+                    <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
+                    <script>
+                        $('#calendar').datepicker({
+                            inline: true,
+                            firstDay: 1,
+                            showOtherMonths: true,
+                            dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+                        });
+                    </script>
+                    <div id="calendar"> </div>
+                </p>
+        </div>-->
+
+
+    <div id="divContent">
+
+        <!--<h3>Calendar of Events</h3>-->
+
+        <h3 id="upcoming">Upcoming Events</h3>
+
+        <p>All times are in 24-hour format</p>
+
+        <article id="upcomingEvents"></article>
+    </div>

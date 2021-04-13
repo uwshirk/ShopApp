@@ -1,0 +1,89 @@
+﻿@model EmailTestApp.Models.GroupModel
+
+@{
+    ViewBag.Title = "Group Members";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Group Members</title>
+</head>
+<div id="divContent">
+    <div>
+        <h4>Group</h4>
+    	<hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.GroupName)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.GroupName)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.GroupScore)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.GroupScore)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.StartTime)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.EventDate)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.EventDate)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.EventName)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.EventName)
+            </dd>
+    
+        </dl>
+
+        <h4>Members</h4>
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(modelItem => Model.GroupMembers[0].FirstName)</th>
+                <th>@Html.DisplayNameFor(modelItem => Model.GroupMembers[0].LastName)</th>
+                <th>@Html.DisplayNameFor(modelItem => Model.GroupMembers[0].MemberEmail)</th>
+            </tr>
+            @foreach (EmailTestApp.Models.MembersModel m in Model.GroupMembers)
+            { 
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => m.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => m.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => m.MemberEmail)
+                </td>
+            </tr>
+            }
+        </table>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</div>
+</html>

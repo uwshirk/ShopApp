@@ -1,0 +1,59 @@
+﻿@model EmailTestApp.Models.EmailFormModel
+
+@{    
+    string league = ViewBag.leagueRef;
+}
+
+<h4>The event link will be automatically added to your message.</h4>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div id="divContent">
+        <hr />
+        <div>
+            @Html.LabelFor(m => m.FromName, new { @class = "col-md-2 control-label" })
+            <div>
+                @Html.TextBoxFor(m => m.FromName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.FromName)
+            </div>
+        </div>
+
+        <div>
+            @Html.LabelFor(m => m.FromEmail, new { @class = "col-md-2 control-label" })
+            <div>
+                @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.FromEmail)
+            </div>
+        </div>
+
+        <div>
+            @Html.LabelFor(m => m.Recipients, new { @class = "col-md-2 control-label" })
+            <div>
+
+                @Html.ListBoxFor(m => m.Recipients, new MultiSelectList(EmailTestApp.DBA.MemberDB.getLeagueMembersEmail(league),
+                                                  new MultiSelectList(EmailTestApp.DBA.MemberDB.getLeagueMembersEmail(league)).SelectedValues))
+            </div>
+
+            <div>
+                @Html.LabelFor(model => model.Message, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div>
+                    @Html.EditorFor(model => model.Message, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.EventDate)
+            @Html.HiddenFor(model => model.LeagueRef)
+            <div>
+                <div class="col-md-offset-2">
+                    <input type="submit" value="Send" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

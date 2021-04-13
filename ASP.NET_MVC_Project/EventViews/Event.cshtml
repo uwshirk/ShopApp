@@ -1,0 +1,69 @@
+﻿@model Dictionary<int, EmailTestApp.Models.EventModel>
+
+@{
+    ViewBag.Title = "Events";
+}
+<div id="divContent">
+<p>
+    @Html.ActionLink("Create New", "EventCreate")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model[0].EventName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].LeagueRef)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].StartTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].EndTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Location)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Description)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.EventName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.LeagueRef)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.Description)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EventUpdate", new { league = item.Value.LeagueRef, date = item.Value.Date }) |
+                @Html.ActionLink("Details", "EventDetails", new { league = item.Value.LeagueRef, date = item.Value.Date }) |
+                @Html.ActionLink("Remove", "DeleteEvent", new { league = item.Value.LeagueRef, date = item.Value.Date })
+            </td>
+        </tr>
+    }
+
+</table>
+</div>

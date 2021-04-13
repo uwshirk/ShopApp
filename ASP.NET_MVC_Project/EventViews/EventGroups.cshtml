@@ -1,0 +1,162 @@
+﻿@model EmailTestApp.Models.EventModel
+
+@{
+    ViewBag.Title = "Event Groups";
+    Dictionary<int, EmailTestApp.Models.GroupModel> groups = EmailTestApp.DBA.EventDB.getGroups(Model);
+}
+
+<div id="divContent">
+    <h3>@Model.LeagueRef - @Model.EventName</h3>
+    <h4>@Html.ActionLink("To League", "../League/LeagueDetails", new { id = Model.LeagueRef })</h4>
+    <p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (EmailTestApp.DBA.MemberDB.isAdmin(User.Identity.Name))
+        {
+            @Html.ActionLink("Admin Event View", "Event", "Event")
+        }
+    }
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-2">Event Date</div>
+        <div class="col-md-2">Start Time</div>
+        <div class="col-md-2">End Time</div>
+        <div class="col-md-2">Location</div>
+        <div class="col-md-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-2">@Model.Date</div>
+        <div class="col-md-2">@Model.StartTime</div>
+        <div class="col-md-2">@Model.EndTime</div>
+        <div class="col-md-2">@Model.Location</div>
+        <div class="col-md-1">
+            @if(EmailTestApp.DBA.LeagueDB.isCommissioner(User.Identity.Name, Model.LeagueRef)){
+                @Html.ActionLink("Edit", "EventUpdate", new { leagueRef = Model.LeagueRef, date = Model.Date })
+                <text> | </text> @Html.ActionLink("Remove", "DeleteEvent", new { leagueRef = Model.LeagueRef, date = Model.Date})
+            }
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    </p>
+    @if (groups.Count >= 1)
+    {
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => groups[0].GroupName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => groups[0].StartTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => groups[0].GroupScore)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => groups[0].GroupMembers)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in groups)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value.GroupName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value.StartTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value.GroupScore)
+                    </td>
+                    <td>
+                        @{
+                            List<EmailTestApp.Models.MembersModel> members = EmailTestApp.DBA.MemberDB.getGroupMembers(item.Key);
+                            foreach(EmailTestApp.Models.MembersModel member in members)
+                            {
+                                <text>@member.MemberEmail</text>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            EmailTestApp.Models.LeagueModel myLeague = EmailTestApp.DBA.LeagueDB.getLeague(Model.LeagueRef);
+                            if (User.Identity.Name.Equals(myLeague.Commissioner))
+                            {
+                                <text>
+                                    @Html.ActionLink("Edit", "GroupUpdate", new {  id=item.Key  }) |
+                                    @Html.ActionLink("Members", "GroupMembers", new { id = item.Key }) |
+                                    @Html.ActionLink("Delete", "DeleteGroup", new { id = item.Key })
+                                    @if (EmailTestApp.DBA.MemberDB.memberInGroup(User.Identity.Name, item.Key))
+                                    {
+                                        using (Html.BeginForm("EventGroups", "Event", new { league = Model.LeagueRef, date = Model.Date, groupKey = item.Key, join = false }, FormMethod.Post))
+                                        {
+                                        <input type="submit" name="submit" value="Leave" class="btn btn-primary" />
+                                        }
+                                    }
+                                    else if (!item.Value.isFull())
+                                    {
+                                        using (Html.BeginForm("EventGroups", "Event", new { league = Model.LeagueRef, date = Model.Date, groupKey = item.Key, join = true }, FormMethod.Post))
+                                        {
+                                            <input type="submit" name="submit" value="Join" class="btn btn-primary" />
+                                        }
+                                    }
+                                </text>
+                            }
+                            else if (EmailTestApp.DBA.MemberDB.memberInGroup(User.Identity.Name, item.Key))
+                            {
+                                @Html.ActionLink("Members", "GroupMembers", new { id = item.Key })
+                                using (Html.BeginForm("EventGroups", "Event", new { league = Model.LeagueRef, date = Model.Date, groupKey = item.Key, join = false }, FormMethod.Post))
+                                {
+                                    <input type="submit" name="submit" value="Leave" class="btn btn-primary" />
+                                }
+                            }
+                            else if (!item.Value.isFull())
+                            {
+                                @Html.ActionLink("Members", "GroupMembers", new { id = item.Key })
+                                using (Html.BeginForm("EventGroups", "Event", new { league = Model.LeagueRef, date = Model.Date, groupKey = item.Key, join = true }, FormMethod.Post))
+                                {
+                                    <input type="submit" name="submit" value="Join" class="btn btn-primary" />
+                                }
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Members", "GroupMembers", new { id = item.Key })
+                            }
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Members", "GroupMembers", new { id = item.Key })
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+    else
+    {
+        <p>There are no groups for this event.</p>
+    }
+    <p>
+        @if (User.Identity.IsAuthenticated)
+        {
+            EmailTestApp.Models.LeagueModel myLeague = EmailTestApp.DBA.LeagueDB.getLeague(Model.LeagueRef);
+            if(User.Identity.Name.Equals(myLeague.Commissioner))
+            {
+                @Html.ActionLink("Delete Event", "DeleteEvent", new { league = Model.LeagueRef, date = Model.Date })
+                <text> | </text>@Html.ActionLink("Invite Members to Event", "EventInvite", "Event", new { name = Model.EventName, date = Model.Date, league = Model.LeagueRef }, null)
+    }
+    if (User.Identity.Name.Equals(myLeague.Commissioner) || EmailTestApp.DBA.LeagueDB.isLeagueMember(myLeague.LeagueName, User.Identity.Name))
+    {
+                <text>
+                    @Html.ActionLink("Create New", "GroupCreate", new { eName = Model.EventName, eDate = Model.Date })
+                </text>
+            }
+        }
+    </p>
+</div>
+<!--</body>
+</html>--->
